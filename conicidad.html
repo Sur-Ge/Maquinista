@@ -1,76 +1,135 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📐 Calculadora de Conicidad</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔺 Calculadora de Conicidad</title>
   <style>
     body {
-      background: #121212;
-      color: #f0f0f0;
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
     }
     h1 {
       color: #bb86fc;
+      margin-bottom: 20px;
+    }
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
     }
     input {
       width: 100%;
       padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
-      background: #1e1e1e;
-      color: #f0f0f0;
+      margin-top: 5px;
+      border-radius: 8px;
       border: none;
+      background-color: #292929;
+      color: #fff;
     }
-    .card {
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 20px 0;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    button {
+      background-color: #bb86fc;
+      color: #000;
+      border: none;
+      padding: 12px 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #d4b8ff;
+    }
+    .result {
+      background-color: #292929;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+      font-size: 1em;
+    }
+    .back-button {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .back-button a {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #444;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .back-button a:hover {
+      background-color: #666;
     }
   </style>
 </head>
 <body>
-  <h1>📐 Calculadora de Conicidad</h1>
 
+  <h1>🔺 Calculadora de Conicidad</h1>
   <div class="card">
-    <label for="D">🔺 Diámetro mayor (mm)</label>
-    <input type="number" id="D" placeholder="Ej. 30" />
+    <label for="mayor">🔹 Diámetro mayor (D):</label>
+    <input type="number" id="mayor" step="0.01">
 
-    <label for="d">🔻 Diámetro menor (mm)</label>
-    <input type="number" id="d" placeholder="Ej. 20" />
+    <label for="menor">🔹 Diámetro menor (d):</label>
+    <input type="number" id="menor" step="0.01">
 
-    <label for="L">📏 Longitud del cono (mm)</label>
-    <input type="number" id="L" placeholder="Ej. 50" />
+    <label for="longitud">🔹 Longitud del cono (L):</label>
+    <input type="number" id="longitud" step="0.01">
 
-    <button onclick="calcular()">Calcular</button>
+    <button onclick="calcular()">Calcular Conicidad</button>
 
-    <p id="resultado"></p>
+    <div class="result" id="resultado" style="display:none;"></div>
+  </div>
+
+  <div class="back-button">
+    <a href="index.html">🔙 Volver al Menú Principal</a>
   </div>
 
   <script>
     function calcular() {
-      const D = parseFloat(document.getElementById("D").value);
-      const d = parseFloat(document.getElementById("d").value);
-      const L = parseFloat(document.getElementById("L").value);
-      const res = document.getElementById("resultado");
+      const D = parseFloat(document.getElementById('mayor').value);
+      const d = parseFloat(document.getElementById('menor').value);
+      const L = parseFloat(document.getElementById('longitud').value);
+      const resultado = document.getElementById('resultado');
 
-      if (isNaN(D) || isNaN(d) || isNaN(L) || L === 0) {
-        res.innerText = "❌ Ingresa valores válidos y longitud mayor a 0.";
+      if (isNaN(D) || isNaN(d) || isNaN(L) || L <= 0) {
+        resultado.style.display = "block";
+        resultado.innerHTML = "⚠️ Por favor ingresa todos los valores correctamente.";
         return;
       }
 
       const conicidad = (D - d) / L;
-      const angulo = Math.atan((D - d) / (2 * L)) * (180 / Math.PI);
+      const relacion = `1 : ${(L / (D - d)).toFixed(2)}`;
+      const anguloRad = Math.atan((D - d) / (2 * L));
+      const anguloDeg = (anguloRad * 180 / Math.PI).toFixed(2);
 
-      res.innerHTML = `
-        🔻 Conicidad: ${(conicidad).toFixed(4)} <br>
-        🎯 Ángulo total: ${(2 * angulo).toFixed(2)}° <br>
-        🎯 Ángulo medio: ${angulo.toFixed(2)}°
+      resultado.style.display = "block";
+      resultado.innerHTML = `
+        📏 <strong>Conicidad:</strong> ${(conicidad).toFixed(4)}<br>
+        📐 <strong>Relación:</strong> ${relacion}<br>
+        🎯 <strong>Ángulo aproximado:</strong> ${anguloDeg}°
       `;
     }
   </script>
+
 </body>
 </html>
