@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🧮 Calculadora de Roscas</title>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --accent: #bb86fc;
+      --block-bg: #1e1e1e;
+      --hover-bg: #292929;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    h1 {
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      background: var(--block-bg);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 16px;
+      background: var(--hover-bg);
+      color: var(--text-color);
+    }
+    button {
+      background: var(--accent);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+      transition: 0.3s;
+      box-shadow: 0 0 10px var(--accent);
+    }
+    button:hover {
+      background: #d8afff;
+      transform: scale(1.05);
+    }
+    .results {
+      background: var(--block-bg);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    .result-item {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🧮 Calculadora de Roscas</h1>
+
+<div class="form-group">
+  <label for="tipo">Tipo de rosca:</label>
+  <select id="tipo">
+    <option>Métrica</option>
+    <option>Whitworth</option>
+    <option>UNC</option>
+    <option>UNF</option>
+    <option>NPT</option>
+    <option>BSP</option>
+    <option>Trapezoidal</option>
+  </select>
+
+  <label for="sentido">Sentido:</label>
+  <select id="sentido">
+    <option>Derecha</option>
+    <option>Izquierda</option>
+  </select>
+
+  <label for="diametro">Diámetro nominal (mm):</label>
+  <input type="number" id="diametro" step="0.01" />
+
+  <label for="paso">Paso (mm) / TPI:</label>
+  <input type="number" id="paso" step="0.01" />
+
+  <button onclick="calcularRosca()">Calcular</button>
+</div>
+
+<div id="resultados" class="results" style="display:none;">
+  <h3>📊 Resultados</h3>
+  <div class="result-item"><strong>🔧 Diámetro exterior (De):</strong> <span id="de"></span> mm</div>
+  <div class="result-item"><strong>🎯 Tolerancia H6:</strong> <span id="tolerancia"></span> mm</div>
+  <div class="result-item"><strong>⚖️ Diámetro medio (Dp):</strong> <span id="dp"></span> mm</div>
+  <div class="result-item"><strong>🔘 Diámetro interior (Di):</strong> <span id="di"></span> mm</div>
+  <div class="result-item"><strong>➕ Avance:</strong> <span id="avance"></span> mm/vuelta</div>
+  <div class="result-item"><strong>🔩 Altura del filete:</strong> <span id="h_filete"></span> mm</div>
+  <div class="result-item"><strong>📏 Chaflán recomendado:</strong> <span id="chaflan"></span> mm</div>
+
+  <h3>🧰 Tuerca Correspondiente</h3>
+  <div class="result-item"><strong>📐 Altura mínima de tuerca:</strong> <span id="altura_tuerca"></span> mm</div>
+
+  <br><button onclick="copiarResultados()">📋 Copiar</button>
+</div>
+
+<script>
+  function calcularRosca() {
+    const D = parseFloat(document.getElementById('diametro').value);
+    const P = parseFloat(document.getElementById('paso').value);
+    const sentido = document.getElementById('sentido').value;
+
+    if (isNaN(D) || isNaN(P)) {
+      alert("Por favor completa todos los campos numéricos.");
+      return;
+    }
+
+    const De = D;
+    const tolerancia_inf = D - (0.016 * Math.pow(D, 0.3)); // estimado H6
+    const Dp = D - (0.6495 * P);
+    const Di = D - (1.2268 * P);
+    const Avance = sentido === "Izquierda" ? -P : P;
+    const h = 0.6134 * P;
+    const chaflan = 0.1 * D;
+    const alturaTuerca = 0.8 * D;
+
+    document.getElementById('de').innerText = De.toFixed(3);
+    document.getElementById('tolerancia').innerText = `${tolerancia_inf.toFixed(3)} mm — ${De.toFixed(3)} mm`;
+    document.getElementById('dp').innerText = Dp.toFixed(3);
+    document.getElementById('di').innerText = Di.toFixed(3);
+    document.getElementById('avance').innerText = Avance.toFixed(3);
+    document.getElementById('h_filete').innerText = h.toFixed(3);
+    document.getElementById('chaflan').innerText = chaflan.toFixed(2);
+    document.getElementById('altura_tuerca').innerText = alturaTuerca.toFixed(2);
+
+    document.getElementById('resultados').style.display = 'block';
+  }
+
+  function copiarResultados() {
+    const texto = `
+🔧 Diámetro exterior (De): ${document.getElementById('de').innerText} mm
+🎯 Tolerancia H6: ${document.getElementById('tolerancia').innerText}
+⚖️ Diámetro medio (Dp): ${document.getElementById('dp').innerText} mm
+🔘 Diámetro interior (Di): ${document.getElementById('di').innerText} mm
+➕ Avance: ${document.getElementById('avance').innerText} mm/vuelta
+🔩 Altura del filete: ${document.getElementById('h_filete').innerText} mm
+📏 Chaflán recomendado: ${document.getElementById('chaflan').innerText} mm
+🧰 Altura mínima de tuerca: ${document.getElementById('altura_tuerca').innerText} mm
+    `;
+    navigator.clipboard.writeText(texto).then(() => {
+      alert("Resultados copiados al portapapeles.");
+    });
+  }
+</script>
+
+</body>
+</html>
