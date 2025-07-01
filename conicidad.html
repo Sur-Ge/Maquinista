@@ -105,8 +105,8 @@
 
   <!-- Cálculo desde relación -->
   <div class="card">
-    <label for="relacion">🔸 Relación de conicidad (ej: 1:8.89):</label>
-    <input type="text" id="relacion" placeholder="1:8.89">
+    <label for="relacion">🔸 Relación de conicidad (X):</label>
+    <input type="number" id="relacion" step="0.01" placeholder="Ej: 8.89">
 
     <button onclick="calcularDesdeRelacion()">Calcular Ángulo desde Relación</button>
 
@@ -144,23 +144,21 @@
     }
 
     function calcularDesdeRelacion() {
-      const relacion = document.getElementById('relacion').value.trim();
+      const valor = parseFloat(document.getElementById('relacion').value);
       const resultado = document.getElementById('resultado2');
 
-      const partes = relacion.split(':');
-      if (partes.length !== 2 || parseFloat(partes[0]) !== 1 || isNaN(parseFloat(partes[1]))) {
+      if (isNaN(valor) || valor <= 0) {
         resultado.style.display = "block";
-        resultado.innerHTML = "⚠️ Ingresa la relación en el formato correcto, por ejemplo: 1:8.89";
+        resultado.innerHTML = "⚠️ Ingresa una relación válida (número mayor a 0).";
         return;
       }
 
-      const rel = parseFloat(partes[1]);
-      const anguloRad = Math.atan(1 / (2 * rel));
+      const anguloRad = Math.atan(1 / (2 * valor));
       const anguloDeg = (anguloRad * 180 / Math.PI).toFixed(2);
 
       resultado.style.display = "block";
       resultado.innerHTML = `
-        📐 <strong>Relación ingresada:</strong> 1:${rel}<br>
+        📐 <strong>Relación ingresada:</strong> ${valor}<br>
         🎯 <strong>Ángulo aproximado:</strong> ${anguloDeg}°
       `;
     }
