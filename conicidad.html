@@ -26,6 +26,7 @@
       max-width: 480px;
       width: 100%;
       box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      margin-bottom: 30px;
     }
     label {
       display: block;
@@ -85,6 +86,8 @@
 <body>
 
   <h1>🔺 Calculadora de Conicidad</h1>
+
+  <!-- Cálculo tradicional -->
   <div class="card">
     <label for="mayor">🔹 Diámetro mayor (D):</label>
     <input type="number" id="mayor" step="0.01">
@@ -95,9 +98,19 @@
     <label for="longitud">🔹 Longitud del cono (L):</label>
     <input type="number" id="longitud" step="0.01">
 
-    <button onclick="calcular()">Calcular Conicidad</button>
+    <button onclick="calcularConicidad()">Calcular Conicidad</button>
 
-    <div class="result" id="resultado" style="display:none;"></div>
+    <div class="result" id="resultado1" style="display:none;"></div>
+  </div>
+
+  <!-- Cálculo desde relación -->
+  <div class="card">
+    <label for="relacion">🔸 Relación de conicidad (ej: 1:8.89):</label>
+    <input type="text" id="relacion" placeholder="1:8.89">
+
+    <button onclick="calcularDesdeRelacion()">Calcular Ángulo desde Relación</button>
+
+    <div class="result" id="resultado2" style="display:none;"></div>
   </div>
 
   <div class="back-button">
@@ -105,11 +118,11 @@
   </div>
 
   <script>
-    function calcular() {
+    function calcularConicidad() {
       const D = parseFloat(document.getElementById('mayor').value);
       const d = parseFloat(document.getElementById('menor').value);
       const L = parseFloat(document.getElementById('longitud').value);
-      const resultado = document.getElementById('resultado');
+      const resultado = document.getElementById('resultado1');
 
       if (isNaN(D) || isNaN(d) || isNaN(L) || L <= 0) {
         resultado.style.display = "block";
@@ -126,6 +139,28 @@
       resultado.innerHTML = `
         📏 <strong>Conicidad:</strong> ${(conicidad).toFixed(4)}<br>
         📐 <strong>Relación:</strong> ${relacion}<br>
+        🎯 <strong>Ángulo aproximado:</strong> ${anguloDeg}°
+      `;
+    }
+
+    function calcularDesdeRelacion() {
+      const relacion = document.getElementById('relacion').value.trim();
+      const resultado = document.getElementById('resultado2');
+
+      const partes = relacion.split(':');
+      if (partes.length !== 2 || parseFloat(partes[0]) !== 1 || isNaN(parseFloat(partes[1]))) {
+        resultado.style.display = "block";
+        resultado.innerHTML = "⚠️ Ingresa la relación en el formato correcto, por ejemplo: 1:8.89";
+        return;
+      }
+
+      const rel = parseFloat(partes[1]);
+      const anguloRad = Math.atan(1 / (2 * rel));
+      const anguloDeg = (anguloRad * 180 / Math.PI).toFixed(2);
+
+      resultado.style.display = "block";
+      resultado.innerHTML = `
+        📐 <strong>Relación ingresada:</strong> 1:${rel}<br>
         🎯 <strong>Ángulo aproximado:</strong> ${anguloDeg}°
       `;
     }
