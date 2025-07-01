@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📊 Analizador HCN (Mejorado)</title>
+  <title>📊 Analizador HCN</title>
   <style>
     body { background: #121212; color: #f0f0f0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
     h1 { color: #bb86fc; text-align: center; }
@@ -32,6 +32,7 @@
 </head>
 <body>
 <h1>📊 Analizador de Código G/M HCN (Mejorado)</h1>
+
 <div class="main-container">
   <div class="panel sim-panel">
     <h3>🎥 Simulación X-Z</h3>
@@ -79,7 +80,7 @@
 </div>
 
 <script>
-let lineas = [], index = 0, x = 250, z = 150, svg;
+let lineas = [], index = 0, x = 250, z = 150, svg, simulando = false;
 
 function toggleTabla() {
   const tabla = document.getElementById("tabla");
@@ -124,18 +125,27 @@ function copiar() {
 }
 
 function simular() {
-  if (index >= lineas.length) return;
-  ejecutar(lineas[index]); index++; setTimeout(simular, 500);
+  if (simulando || lineas.length === 0) return;
+  simulando = true; index = 0;
+  simularPaso();
+}
+
+function simularPaso() {
+  if (index >= lineas.length) { simulando = false; return; }
+  ejecutar(lineas[index]);
+  index++;
+  setTimeout(simularPaso, 500);
 }
 
 function paso() {
-  if (index < lineas.length) ejecutar(lineas[index++]);
+  if (lineas.length === 0 || index >= lineas.length) return;
+  ejecutar(lineas[index++]);
 }
 
 function reiniciar() {
   svg = document.getElementById("simulador");
   svg.innerHTML = '<line x1="250" y1="0" x2="250" y2="300" stroke="#555" stroke-dasharray="4"/><line x1="0" y1="150" x2="500" y2="150" stroke="#555" stroke-dasharray="4"/>';
-  x = 250; z = 150; index = 0;
+  x = 250; z = 150; index = 0; simulando = false;
   let punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   punto.setAttribute("cx", x); punto.setAttribute("cy", z); punto.setAttribute("r", 4); punto.setAttribute("fill", "#0f0");
   svg.appendChild(punto);
@@ -144,14 +154,16 @@ function reiniciar() {
 function ejecutar(l) {
   l = l.toUpperCase();
   if (!(l.includes("G00") || l.includes("G01"))) return;
-  let X = l.match(/X(-?\\d+\\.?\\d*)/); let Z = l.match(/Z(-?\\d+\\.?\\d*)/);
+  let X = l.match(/X(-?\\d+(\\.\\d+)?)/);
+  let Z = l.match(/Z(-?\\d+(\\.\\d+)?)/);
   let newX = X ? 250 + parseFloat(X[1]) : x;
   let newZ = Z ? 150 - parseFloat(Z[1]) : z;
   let linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
   linea.setAttribute("x1", x); linea.setAttribute("y1", z);
   linea.setAttribute("x2", newX); linea.setAttribute("y2", newZ);
   linea.setAttribute("stroke", "#bb86fc"); linea.setAttribute("stroke-width", "2");
-  svg.appendChild(linea); x = newX; z = newZ;
+  svg.appendChild(linea);
+  x = newX; z = newZ;
 }
 </script>
 </body>
