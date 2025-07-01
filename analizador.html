@@ -9,7 +9,7 @@
     h1 { color: #bb86fc; text-align: center; }
     .main-container { display: flex; flex-wrap: wrap; gap: 20px; }
     .panel { flex: 1; min-width: 300px; background: #1e1e1e; border-radius: 12px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
-    .sim-panel { order: -1; }
+    .sim-panel { order: -1; flex: 1.2; }
     textarea { width: 100%; height: 150px; background: #292929; color: #fff; border: none; border-radius: 8px; padding: 10px; resize: vertical; font-family: monospace; }
     .controls button {
       background: linear-gradient(to right, #bb86fc, #9a68cb);
@@ -35,15 +35,22 @@
 
 <div class="main-container">
   <div class="panel sim-panel">
-    <h3>🎥 Simulación X-Z</h3>
-    <svg id="simulador" viewBox="0 0 500 300">
-      <line x1="250" y1="0" x2="250" y2="300" stroke="#555" stroke-dasharray="4"/>
-      <line x1="0" y1="150" x2="500" y2="150" stroke="#555" stroke-dasharray="4"/>
-    </svg>
+    <h3>🎥 Simulador CNC • Plano X-Z</h3>
+    <div style="background:#000; border-radius:12px; padding:10px; border:2px solid #444;">
+      <svg id="simulador" viewBox="0 0 500 300">
+        <line x1="250" y1="0" x2="250" y2="300" stroke="#444" stroke-dasharray="4" />
+        <line x1="0" y1="150" x2="500" y2="150" stroke="#444" stroke-dasharray="4" />
+        <text x="255" y="15" fill="#888" font-size="12">↑ Z+</text>
+        <text x="255" y="295" fill="#888" font-size="12">↓ Z-</text>
+        <text x="10" y="145" fill="#888" font-size="12">← X-</text>
+        <text x="470" y="145" fill="#888" font-size="12">X+ →</text>
+      </svg>
+    </div>
     <div class="controls">
       <button onclick="simular()">▶️ Reproducir</button>
-      <button onclick="paso()">⏭️ Paso</button>
+      <button onclick="paso()">⏭️ Siguiente línea</button>
       <button onclick="reiniciar()">🔁 Reiniciar</button>
+      <button onclick="limpiar()">🧹 Limpiar trazos</button>
     </div>
   </div>
 
@@ -143,9 +150,20 @@ function paso() {
 }
 
 function reiniciar() {
+  limpiar();
+}
+
+function limpiar() {
   svg = document.getElementById("simulador");
-  svg.innerHTML = '<line x1="250" y1="0" x2="250" y2="300" stroke="#555" stroke-dasharray="4"/><line x1="0" y1="150" x2="500" y2="150" stroke="#555" stroke-dasharray="4"/>';
-  x = 250; z = 150; index = 0; simulando = false;
+  svg.innerHTML = `
+    <line x1="250" y1="0" x2="250" y2="300" stroke="#444" stroke-dasharray="4" />
+    <line x1="0" y1="150" x2="500" y2="150" stroke="#444" stroke-dasharray="4" />
+    <text x="255" y="15" fill="#888" font-size="12">↑ Z+</text>
+    <text x="255" y="295" fill="#888" font-size="12">↓ Z-</text>
+    <text x="10" y="145" fill="#888" font-size="12">← X-</text>
+    <text x="470" y="145" fill="#888" font-size="12">X+ →</text>
+  `;
+  x = 250; z = 150;
   let punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   punto.setAttribute("cx", x); punto.setAttribute("cy", z); punto.setAttribute("r", 4); punto.setAttribute("fill", "#0f0");
   svg.appendChild(punto);
@@ -153,9 +171,9 @@ function reiniciar() {
 
 function ejecutar(l) {
   l = l.toUpperCase();
-  if (!(l.includes("G00") || l.includes("G01"))) return;
   let X = l.match(/X(-?\\d+(\\.\\d+)?)/);
   let Z = l.match(/Z(-?\\d+(\\.\\d+)?)/);
+  if (!X && !Z) return;
   let newX = X ? 250 + parseFloat(X[1]) : x;
   let newZ = Z ? 150 - parseFloat(Z[1]) : z;
   let linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
