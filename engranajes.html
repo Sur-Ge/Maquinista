@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engranajes</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap">
+  <style>
+    :root {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --accent: #bb86fc;
+      --block-bg: #1e1e1e;
+      --input-bg: #333;
+      --border-color: #a273ff;
+    }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .bloque {
+      background-color: var(--block-bg);
+      border-left: 5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .bloque h3 {
+      margin: 0 0 12px;
+      color: var(--accent);
+    }
+    .operacion {
+      background-color: var(--input-bg);
+      border-left: 4px solid var(--accent);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 1.05em;
+      margin-top: 10px;
+    }
+    input[type="number"] {
+      background: var(--input-bg);
+      color: var(--text-color);
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-top: 6px;
+      width: 100%;
+      max-width: 200px;
+    }
+    button {
+      background-color: var(--accent);
+      color: black;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #9855e0;
+    }
+    .resultado {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.8em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fórmulas de Engranajes</h1>
+  <div class="bloque">
+    <h3>Calcular el Módulo (M)</h3>
+    <div class="operacion">M = P / π</div>
+    <label>P: <input type="number" id="P"></label><br>
+    <button onclick="calcularM()">Calcular</button>
+    <div class="resultado" id="resM">Resultado: —</div>
+  </div>
+  <div class="bloque">
+    <h3>Calcular Diámetro Primitivo (Dp)</h3>
+    <div class="operacion">Dp = M × N</div>
+    <label>M: <input type="number" id="M1"></label><br>
+    <label>N: <input type="number" id="N1"></label><br>
+    <button onclick="calcularDp()">Calcular</button>
+    <div class="resultado" id="resDp">Resultado: —</div>
+  </div>
+  <div class="bloque">
+    <h3>Calcular Altura del Diente (H)</h3>
+    <div class="operacion">H = M × 2.167</div>
+    <label>M: <input type="number" id="M2"></label><br>
+    <button onclick="calcularH()">Calcular</button>
+    <div class="resultado" id="resH">Resultado: —</div>
+  </div>
+  <div class="bloque">
+    <h3>Calcular Diámetro Exterior (De)</h3>
+    <div class="operacion">De = M × (N + 2)</div>
+    <label>M: <input type="number" id="M3"></label><br>
+    <label>N: <input type="number" id="N2"></label><br>
+    <button onclick="calcularDe()">Calcular</button>
+    <div class="resultado" id="resDe">Resultado: —</div>
+  </div>
+  <div class="bloque">
+    <h3>Calcular Diámetro Interior (Di)</h3>
+    <div class="operacion">Di = Dp − (2 × M × 1.167)</div>
+    <label>Dp: <input type="number" id="Dp"></label><br>
+    <label>M: <input type="number" id="M4"></label><br>
+    <button onclick="calcularDi()">Calcular</button>
+    <div class="resultado" id="resDi">Resultado: —</div>
+  </div>
+  <footer>
+    <p><a href="index.html" style="color: var(--accent); text-decoration: none;">← Volver al menú</a></p>
+  </footer>
+  <script>
+    function calcularM() {
+      const P = parseFloat(document.getElementById('P').value);
+      const M = P / Math.PI;
+      document.getElementById('resM').textContent = `Resultado: M = ${M.toFixed(3)}`;
+    }
+    function calcularDp() {
+      const M = parseFloat(document.getElementById('M1').value);
+      const N = parseFloat(document.getElementById('N1').value);
+      const Dp = M * N;
+      document.getElementById('resDp').textContent = `Resultado: Dp = ${Dp.toFixed(3)}`;
+    }
+    function calcularH() {
+      const M = parseFloat(document.getElementById('M2').value);
+      const H = M * 2.167;
+      document.getElementById('resH').textContent = `Resultado: H = ${H.toFixed(3)}`;
+    }
+    function calcularDe() {
+      const M = parseFloat(document.getElementById('M3').value);
+      const N = parseFloat(document.getElementById('N2').value);
+      const De = M * (N + 2);
+      document.getElementById('resDe').textContent = `Resultado: De = ${De.toFixed(3)}`;
+    }
+    function calcularDi() {
+      const Dp = parseFloat(document.getElementById('Dp').value);
+      const M = parseFloat(document.getElementById('M4').value);
+      const Di = Dp - (2 * M * 1.167);
+      document.getElementById('resDi').textContent = `Resultado: Di = ${Di.toFixed(3)}`;
+    }
+  </script>
+</body>
+</html>
