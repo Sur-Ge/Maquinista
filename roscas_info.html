@@ -2,171 +2,100 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Información sobre Roscas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📏 Información sobre Roscas</title>
   <style>
     :root {
       --bg-color: #121212;
       --text-color: #f0f0f0;
       --accent: #bb86fc;
       --block-bg: #1e1e1e;
-      --fade-distance: 60px;
+      --hover-bg: #292929;
     }
-
     body {
-      margin: 0;
-      padding: 0 20px;
       background-color: var(--bg-color);
       color: var(--text-color);
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      background-color: var(--bg-color);
-      padding: 20px 0;
-      text-align: center;
-      z-index: 10;
-      transition: opacity 0.6s ease;
-    }
-
-    .content {
-      max-width: 800px;
-      margin: 0 auto;
-      padding-bottom: 50px;
-    }
-
-    section {
-      margin-bottom: 40px;
-      background-color: var(--block-bg);
+      line-height: 1.6;
       padding: 20px;
-      border-left: 5px solid var(--accent);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      opacity: 0;
-      transform: translateY(var(--fade-distance));
-      transition: opacity 0.8s ease, transform 0.8s ease;
     }
-
-    section.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    h2 {
+    h1, h2 {
       color: var(--accent);
+      animation: fadeInUp 1s ease forwards;
     }
-
-    ul {
-      padding-left: 20px;
+    section {
+      background: var(--block-bg);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      animation: fadeIn 1s ease forwards;
     }
-
-    .boton {
+    .boton-calculadora {
       display: inline-block;
-      margin-top: 20px;
-      background-color: var(--accent);
+      background: var(--accent);
       color: #000;
-      padding: 14px 26px;
-      font-size: 1.1em;
-      font-weight: bold;
+      padding: 14px 24px;
       border-radius: 12px;
       text-decoration: none;
+      font-weight: bold;
       box-shadow: 0 0 10px var(--accent);
-      transition: all 0.3s ease;
+      transition: 0.3s ease;
+      margin-top: 20px;
+      animation: pulse 2s infinite;
     }
-
-    .boton:hover {
+    .boton-calculadora:hover {
       box-shadow: 0 0 20px var(--accent);
       transform: scale(1.05);
     }
 
-    footer {
-      text-align: center;
-      color: #777;
-      font-size: 0.8em;
-      margin-top: 60px;
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px var(--accent); }
+      50% { box-shadow: 0 0 20px var(--accent); }
     }
   </style>
 </head>
 <body>
-  <header id="encabezado">
-    <h1>Todo sobre las Roscas</h1>
-  </header>
+  <h1>📏 Información sobre Roscas</h1>
 
-  <div class="content">
-    <section>
-      <h2>¿Qué es una rosca?</h2>
-      <p>Una rosca es una forma helicoidal que se utiliza para convertir movimiento rotatorio en lineal o para unir piezas mediante el ajuste entre una parte interna y una externa.</p>
-    </section>
+  <section>
+    <h2>🔩 ¿Qué es una rosca?</h2>
+    <p>Una rosca es una forma helicoidal que se encuentra comúnmente en tornillos y tuercas. Sirve para fijar piezas, transmitir fuerza o movimiento.</p>
+  </section>
 
-    <section>
-      <h2>Historia</h2>
-      <p>Las roscas datan de tiempos antiguos, utilizadas por griegos y romanos para prensas y mecanismos simples. Su estandarización industrial comenzó en el siglo XIX, facilitando la producción masiva de tornillos y tuercas.</p>
-    </section>
+  <section>
+    <h2>📚 Tipos de rosca</h2>
+    <ul>
+      <li><strong>🔧 Métrica (M):</strong> Estándar internacional en milímetros.</li>
+      <li><strong>🔧 Whitworth (BSW):</strong> Usada en Reino Unido, en pulgadas.</li>
+      <li><strong>🔧 UNC / UNF:</strong> Estándar estadounidense (gruesa y fina).</li>
+      <li><strong>🔧 NPT:</strong> Rosca cónica para tuberías.</li>
+      <li><strong>🔧 BSP:</strong> Rosca británica para tuberías.</li>
+      <li><strong>🔧 Trapezoidal:</strong> Para transmisión de movimiento y fuerza.</li>
+    </ul>
+  </section>
 
-    <section>
-      <h2>Tipos de roscas</h2>
-      <ul>
-        <li><strong>Rosca Métrica (ISO):</strong> La más común en todo el mundo, con perfiles triangulares y unidades en milímetros.</li>
-        <li><strong>Rosca Unificada (UNC/UNF):</strong> Estándar en EE.UU., se mide en pulgadas. UNC es gruesa y UNF es fina.</li>
-        <li><strong>Rosca Whitworth:</strong> Antiguo estándar británico con ángulo de 55°. Aún usada en equipos antiguos.</li>
-        <li><strong>Rosca Trapezoidal:</strong> Ideal para transmisión de fuerza, común en tornillos de potencia y husillos.</li>
-        <li><strong>Rosca Redonda:</strong> Usada en bombillos, conexiones eléctricas y lugares donde se requieren perfiles suaves.</li>
-        <li><strong>Rosca Cuadrada:</strong> Muy eficiente para transmisión de potencia, pero difícil de fabricar.</li>
-        <li><strong>Rosca ACME:</strong> Variante de la trapezoidal, más robusta y fácil de mecanizar.</li>
-        <li><strong>Rosca BSP (British Standard Pipe):</strong> Usada en tuberías y conexiones hidráulicas.</li>
-        <li><strong>Rosca NPT (National Pipe Thread):</strong> Estándar cónico americano para sellado en tuberías.</li>
-      </ul>
-    </section>
+  <section>
+    <h2>🔄 Sentido de la rosca</h2>
+    <p>Las roscas pueden ser <strong>derechas</strong> (giran en sentido horario) o <strong>izquierdas</strong> (giran antihorario). Las izquierdas se usan cuando la dirección normal podría aflojar la unión.</p>
+  </section>
 
-    <section>
-      <h2>Significado de siglas comunes</h2>
-      <ul>
-        <li><strong>P:</strong> Paso de rosca</li>
-        <li><strong>D:</strong> Diámetro exterior</li>
-        <li><strong>d:</strong> Diámetro interior</li>
-        <li><strong>h:</strong> Altura del hilo</li>
-        <li><strong>N:</strong> Número de hilos</li>
-        <li><strong>Á:</strong> Ángulo de la rosca</li>
-      </ul>
-    </section>
+  <section>
+    <h2>🛠 Aplicaciones comunes</h2>
+    <p>Las roscas se usan en maquinaria, automoción, construcción, fontanería, y herramientas. Son esenciales en el diseño mecánico y fabricación.</p>
+  </section>
 
-    <section>
-      <h2>¿Dónde se usan?</h2>
-      <p>Las roscas son fundamentales en fijación, maquinaria, plomería, impresoras 3D, sistemas CNC, robótica y más. Permiten uniones seguras, movimiento mecánico preciso y sellado de fluidos.</p>
-      <a class="boton" href="roscas.html">Ir a la Calculadora 🔩</a>
-    </section>
-  </div>
-
-  <footer>Hecho por Sur-Ge • 2025</footer>
-
-  <script>
-    const sections = document.querySelectorAll('section');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    sections.forEach(section => {
-      observer.observe(section);
-    });
-
-    // Encabezado que se esfuma al hacer scroll
-    const header = document.getElementById('encabezado');
-    let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > lastScrollY) {
-        header.style.opacity = '0.4';
-      } else {
-        header.style.opacity = '1';
-      }
-      lastScrollY = window.scrollY;
-    });
-  </script>
+  <a href="roscas.html" class="boton-calculadora">🧮 Ir a la Calculadora de Roscas</a>
 </body>
 </html>
