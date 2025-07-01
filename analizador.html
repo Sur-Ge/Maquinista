@@ -3,154 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📊 Analizador HCN • Isométrico</title>
+  <title>📊 Analizador HCN</title>
   <style>
     body { background: #121212; color: #f0f0f0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
     h1 { color: #bb86fc; text-align: center; }
-    .main-container { display: flex; flex-wrap: wrap; gap: 20px; }
-    .panel { flex: 1; min-width: 300px; background: #1e1e1e; border-radius: 12px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
-    .sim-panel { order: -1; flex: 1.2; }
-    textarea { width: 100%; height: 150px; background: #292929; color: #fff; border: none; border-radius: 8px; padding: 10px; resize: vertical; font-family: monospace; }
+    .panel {
+      max-width: 700px;
+      margin: auto;
+      background: #1e1e1e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    textarea {
+      width: 100%;
+      height: 180px;
+      background: #292929;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      resize: vertical;
+      font-family: monospace;
+    }
+    .controls {
+      margin-top: 15px;
+    }
     .controls button {
       background: linear-gradient(to right, #bb86fc, #9a68cb);
-      color: #000; border: none; padding: 10px 16px;
-      border-radius: 8px; margin: 5px 5px 10px 0;
-      cursor: pointer; font-weight: bold; transition: 0.3s;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-right: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
     }
-    .controls button:hover { transform: scale(1.05); box-shadow: 0 0 10px #bb86fc; }
+    .controls button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #bb86fc;
+    }
     pre span.ok { color: #a0f8a0; }
     pre span.error { color: #ff5252; }
-    svg { width: 100%; height: 300px; background: #000; border: 1px solid #444; }
-    .stats { background: #1e1e1e; padding: 10px; margin-top: 10px; border-radius: 10px; color: #ccc; font-weight: bold; text-align: center; }
+    #stats {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #ccc;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-<h1>📊 Analizador de Código G/M HCN (Vista Isométrica)</h1>
-
-<div class="main-container">
-  <div class="panel sim-panel">
-    <h3>📐 Simulador Isométrico CNC</h3>
-    <div style="background:#000; border-radius:12px; padding:10px; border:2px solid #444;">
-      <svg id="simulador" viewBox="0 0 500 300">
-        <!-- Ejes isométricos -->
-        <line x1="250" y1="150" x2="350" y2="80" stroke="#444" stroke-dasharray="4" /> <!-- Eje X -->
-        <line x1="250" y1="150" x2="150" y2="80" stroke="#444" stroke-dasharray="4" /> <!-- Eje Z -->
-        <line x1="250" y1="150" x2="250" y2="250" stroke="#444" stroke-dasharray="4" /> <!-- Eje Y -->
-        <!-- Etiquetas -->
-        <text x="360" y="80" fill="#888" font-size="12">X</text>
-        <text x="140" y="80" fill="#888" font-size="12">Z</text>
-        <text x="255" y="260" fill="#888" font-size="12">Y</text>
-      </svg>
-    </div>
-    <div class="controls">
-      <button onclick="simular()">▶️ Reproducir</button>
-      <button onclick="paso()">⏭️ Siguiente</button>
-      <button onclick="reiniciar()">🔁 Reiniciar</button>
-      <button onclick="limpiar()">🧹 Limpiar</button>
-    </div>
-  </div>
+  <h1>📊 Analizador de Código G/M HCN</h1>
 
   <div class="panel">
     <h3>🧾 Pega tu código CNC</h3>
-    <textarea id="codigo" placeholder="Ej: G00 X0 Z0\nG01 X10 Z-10"></textarea>
+    <textarea id="codigo" placeholder="Ej: G00 X0 Z0\nG01 X10 Z-10\nG71 ..."></textarea>
     <div class="controls">
       <button onclick="analizar()">🔍 Analizar</button>
       <button onclick="copiar()">📋 Copiar</button>
     </div>
     <pre id="resultado"></pre>
-    <div id="stats" class="stats"></div>
+    <div id="stats"></div>
   </div>
-</div>
 
-<script>
-let lineas = [], index = 0, x = 250, y = 150, svg, simulando = false;
+  <script>
+    function analizar() {
+      const codigo = document.getElementById("codigo").value.trim().split("\\n");
+      const lineas = codigo.filter(l => l.trim());
+      let salida = '', ok = 0, err = 0;
 
-function analizar() {
-  const codigo = document.getElementById("codigo").value.trim().split("\\n");
-  lineas = codigo.filter(l => l.trim());
-  let salida = '', ok = 0, err = 0;
-  for (let i = 0; i < lineas.length; i++) {
-    let l = lineas[i].toUpperCase().trim();
-    let exp = '';
-    if (!l) { exp = '❌ Línea vacía'; err++; }
-    else if (l.match(/G(70|71|72|73|74|75|76|8[0-9])/)) exp = "Ciclo reconocido";
-    else if (l.match(/G00|G01/)) exp = "Movimiento";
-    else if (l.match(/M03|M05|M08|M09|M30/)) exp = "Comando M";
-    else if (l.match(/X|Z/)) exp = "Coordenadas";
-    else exp = '❌ Código no reconocido', err++;
-    if (!exp.startsWith('❌')) ok++;
-    salida += `<span class="${exp.startsWith('❌') ? 'error':'ok'}">Línea ${i+1}: ${l} → ${exp}</span>\\n`;
-  }
-  document.getElementById("resultado").innerHTML = salida;
-  document.getElementById("stats").innerText = `📄 Total: ${lineas.length} | ✅ Correctas: ${ok} | ❌ Errores: ${err}`;
-  reiniciar();
-}
+      for (let i = 0; i < lineas.length; i++) {
+        let l = lineas[i].toUpperCase().trim();
+        let exp = '';
+        if (!l) { exp = '❌ Línea vacía'; err++; }
+        else if (l.match(/G(70|71|72|73|74|75|76|8[0-9])/)) exp = "Ciclo reconocido";
+        else if (l.match(/G00|G01/)) exp = "Movimiento";
+        else if (l.match(/M03|M05|M08|M09|M30/)) exp = "Comando M";
+        else if (l.match(/X|Z/)) exp = "Coordenadas";
+        else exp = '❌ Código no reconocido', err++;
+        if (!exp.startsWith('❌')) ok++;
+        salida += `<span class="${exp.startsWith('❌') ? 'error':'ok'}">Línea ${i+1}: ${l} → ${exp}</span>\\n`;
+      }
 
-function copiar() {
-  navigator.clipboard.writeText(document.getElementById("resultado").innerText).then(() => alert("Copiado"));
-}
+      document.getElementById("resultado").innerHTML = salida;
+      document.getElementById("stats").innerText = `📄 Total: ${lineas.length} | ✅ Correctas: ${ok} | ❌ Errores: ${err}`;
+    }
 
-function simular() {
-  if (simulando || lineas.length === 0) return;
-  simulando = true; index = 0;
-  simularPaso();
-}
-
-function simularPaso() {
-  if (index >= lineas.length) { simulando = false; return; }
-  ejecutar(lineas[index]);
-  index++;
-  setTimeout(simularPaso, 500);
-}
-
-function paso() {
-  if (lineas.length === 0 || index >= lineas.length) return;
-  ejecutar(lineas[index++]);
-}
-
-function reiniciar() {
-  limpiar();
-}
-
-function limpiar() {
-  svg = document.getElementById("simulador");
-  svg.innerHTML = `
-    <line x1="250" y1="150" x2="350" y2="80" stroke="#444" stroke-dasharray="4" />
-    <line x1="250" y1="150" x2="150" y2="80" stroke="#444" stroke-dasharray="4" />
-    <line x1="250" y1="150" x2="250" y2="250" stroke="#444" stroke-dasharray="4" />
-    <text x="360" y="80" fill="#888" font-size="12">X</text>
-    <text x="140" y="80" fill="#888" font-size="12">Z</text>
-    <text x="255" y="260" fill="#888" font-size="12">Y</text>
-  `;
-  x = 250; y = 150;
-  const punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  punto.setAttribute("cx", x);
-  punto.setAttribute("cy", y);
-  punto.setAttribute("r", 4);
-  punto.setAttribute("fill", "#0f0");
-  svg.appendChild(punto);
-}
-
-function ejecutar(l) {
-  l = l.toUpperCase();
-  const matchX = l.match(/X(-?\\d+(\\.\\d+)?)/);
-  const matchZ = l.match(/Z(-?\\d+(\\.\\d+)?)/);
-  if (!matchX && !matchZ) return;
-  let dx = matchX ? parseFloat(matchX[1]) : 0;
-  let dz = matchZ ? parseFloat(matchZ[1]) : 0;
-  // Proyección isométrica básica
-  const isoX = 0.5 * dx - 0.5 * dz;
-  const isoY = 0.25 * dx + 0.25 * dz;
-  let newX = x + isoX;
-  let newY = y - isoY;
-
-  const linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  linea.setAttribute("x1", x); linea.setAttribute("y1", y);
-  linea.setAttribute("x2", newX); linea.setAttribute("y2", newY);
-  linea.setAttribute("stroke", "#bb86fc"); linea.setAttribute("stroke-width", "2");
-  svg.appendChild(linea);
-  x = newX; y = newY;
-}
-</script>
+    function copiar() {
+      navigator.clipboard.writeText(document.getElementById("resultado").innerText)
+        .then(() => alert("Resultados copiados al portapapeles."));
+    }
+  </script>
 </body>
 </html>
