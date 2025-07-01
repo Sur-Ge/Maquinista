@@ -3,76 +3,197 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🔁 Conversión y Tolerancias</title>
+  <title>📐 Conversiones y Tolerancias</title>
   <style>
     body {
-      background: #121212;
+      margin: 0;
+      background-color: #121212;
       color: #f0f0f0;
       font-family: 'Segoe UI', sans-serif;
       padding: 20px;
     }
     h1 {
       color: #bb86fc;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+    .card {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.4);
+      max-width: 420px;
+      width: 100%;
+    }
+    h2 {
+      color: #bb86fc;
+      font-size: 1.3em;
+      margin-bottom: 15px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
     }
     input, select {
       width: 100%;
       padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
-      background: #1e1e1e;
-      color: #f0f0f0;
+      margin-top: 5px;
+      border-radius: 8px;
       border: none;
+      background-color: #292929;
+      color: #fff;
     }
-    .card {
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 20px 0;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    button {
+      margin-top: 20px;
+      background-color: #bb86fc;
+      color: #000;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #d0b5ff;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #292929;
+      border-radius: 10px;
+    }
+    .back {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .back a {
+      background-color: #444;
+      color: #fff;
+      padding: 12px 20px;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .back a:hover {
+      background-color: #666;
     }
   </style>
 </head>
 <body>
-  <h1>🔁 Conversión y Tolerancias</h1>
 
-  <div class="card">
-    <h2>📏 Conversión mm ↔ pulgadas</h2>
-    <input type="number" id="inputValor" placeholder="Ingresa valor" />
-    <select id="tipoConversion">
-      <option value="mmToInch">Milímetros a Pulgadas</option>
-      <option value="inchToMm">Pulgadas a Milímetros</option>
-    </select>
-    <button onclick="convertir()">Convertir</button>
-    <p id="resultado"></p>
+  <h1>📐 Conversión y Tolerancias</h1>
+  <div class="container">
+
+    <!-- Conversión mm ↔ pulgadas -->
+    <div class="card">
+      <h2>📏 Conversión mm ↔ pulgadas</h2>
+      <label for="mm">Milímetros:</label>
+      <input type="number" id="mm" step="0.01" oninput="convertir('mm')">
+      
+      <label for="inches">Pulgadas:</label>
+      <input type="number" id="inches" step="0.0001" oninput="convertir('inches')">
+    </div>
+
+    <!-- Panel de tolerancias -->
+    <div class="card">
+      <h2>📐 Tolerancias ISO</h2>
+      <label for="medida">Medida nominal (mm):</label>
+      <input type="number" id="medida" step="0.01">
+
+      <label for="ajuste">Tipo de ajuste:</label>
+      <select id="ajuste">
+        <option value="H7">H7</option>
+        <option value="g6">g6</option>
+        <option value="js6">js6</option>
+        <option value="h6">h6</option>
+        <!-- Puedes agregar más tolerancias del PDF aquí -->
+      </select>
+
+      <label for="tipo">¿Interna o externa?</label>
+      <select id="tipo">
+        <option value="interna">Interna (agujero)</option>
+        <option value="externa">Externa (eje)</option>
+      </select>
+
+      <button onclick="calcularTolerancia()">Calcular Tolerancia</button>
+
+      <div id="resultadoTol" class="result" style="display:none;"></div>
+    </div>
+
   </div>
 
-  <div class="card">
-    <h2>📐 Tabla de ajustes comunes</h2>
-    <ul>
-      <li><strong>H7 / k6:</strong> Ajuste forzado. Rodamientos.</li>
-      <li><strong>H8 / h9:</strong> Deslizante sin lubricación.</li>
-      <li><strong>H7 / g6:</strong> Holgura mínima. Ejes guías.</li>
-      <li><strong>H7 / p6:</strong> Interferencia firme. Engranajes.</li>
-    </ul>
-    <p>Valores según tabla ISO. Para más detalle, consulta la norma ISO 286.</p>
+  <div class="back">
+    <a href="index.html">🔙 Volver al Menú Principal</a>
   </div>
 
   <script>
-    function convertir() {
-      const valor = parseFloat(document.getElementById("inputValor").value);
-      const tipo = document.getElementById("tipoConversion").value;
-      let resultado = "";
-
-      if (isNaN(valor)) {
-        resultado = "❌ Ingresa un número válido.";
+    function convertir(origen) {
+      const mmInput = document.getElementById('mm');
+      const inInput = document.getElementById('inches');
+      if (origen === 'mm') {
+        const mm = parseFloat(mmInput.value);
+        if (!isNaN(mm)) {
+          inInput.value = (mm / 25.4).toFixed(4);
+        } else {
+          inInput.value = '';
+        }
       } else {
-        resultado = tipo === "mmToInch"
-          ? (valor / 25.4).toFixed(4) + " in"
-          : (valor * 25.4).toFixed(3) + " mm";
+        const inch = parseFloat(inInput.value);
+        if (!isNaN(inch)) {
+          mmInput.value = (inch * 25.4).toFixed(2);
+        } else {
+          mmInput.value = '';
+        }
+      }
+    }
+
+    function calcularTolerancia() {
+      const medida = parseFloat(document.getElementById('medida').value);
+      const ajuste = document.getElementById('ajuste').value;
+      const tipo = document.getElementById('tipo').value;
+      const resultado = document.getElementById('resultadoTol');
+
+      if (isNaN(medida)) {
+        resultado.style.display = "block";
+        resultado.innerHTML = "⚠️ Por favor ingresa la medida nominal.";
+        return;
       }
 
-      document.getElementById("resultado").innerText = resultado;
+      // Tolerancias simplificadas (puedes ampliarlas)
+      const tolerancias = {
+        "H7": { interna: [0, 0.025], externa: [-0.025, 0] },
+        "h6": { interna: [0, 0], externa: [-0.014, 0] },
+        "g6": { interna: [-0.007, 0.007], externa: [-0.010, -0.003] },
+        "js6": { interna: [-0.006, 0.006], externa: [-0.006, 0.006] }
+      };
+
+      if (!tolerancias[ajuste]) {
+        resultado.style.display = "block";
+        resultado.innerHTML = "⚠️ Tolerancia no encontrada.";
+        return;
+      }
+
+      const rango = tolerancias[ajuste][tipo];
+      const min = medida + rango[0];
+      const max = medida + rango[1];
+
+      resultado.style.display = "block";
+      resultado.innerHTML = `
+        🔧 <strong>Límite inferior:</strong> ${min.toFixed(3)} mm<br>
+        🔩 <strong>Límite superior:</strong> ${max.toFixed(3)} mm
+      `;
     }
   </script>
+
 </body>
 </html>
