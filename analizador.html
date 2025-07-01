@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📊 Analizador de Código G</title>
+  <style>
+    body {
+      margin: 0;
+      background: #121212;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+    h1 {
+      text-align: center;
+      color: #bb86fc;
+      margin: 20px;
+    }
+    .container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+    }
+    .panel {
+      flex: 1;
+      min-width: 300px;
+      background: #1e1e1e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      background: #292929;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      resize: vertical;
+      font-family: monospace;
+    }
+    button {
+      background: #bb86fc;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin: 5px 0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #d1afff;
+    }
+    #analisis {
+      font-family: monospace;
+      font-size: 0.95em;
+    }
+    svg {
+      width: 100%;
+      height: 300px;
+      background: #000;
+      border: 1px solid #444;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Analizador de Código G</h1>
+
+  <div class="container">
+    <!-- Análisis -->
+    <div class="panel">
+      <h3>🧾 Pega tu programa CNC</h3>
+      <textarea id="codigo" placeholder="Ej:&#10;G90 G21&#10;G0 X0 Z0&#10;G1 X20 Z-10 F150&#10;M30"></textarea>
+      <button onclick="analizar()">🔍 Analizar</button>
+      <button onclick="copiarAnalisis()">📋 Copiar análisis</button>
+      <pre id="analisis"></pre>
+    </div>
+
+    <!-- Simulación -->
+    <div class="panel">
+      <h3>🎥 Simulación visual (Plano X-Z)</h3>
+      <svg id="simulador" viewBox="0 0 500 300"></svg>
+      <div class="controls">
+        <button onclick="simular()">▶️ Reproducir</button>
+        <button onclick="paso()">⏭️ Paso</button>
+        <button onclick="reiniciar()">🔁 Reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let lineas = [], index = 0, x = 250, z = 150, svg;
+
+    function analizar() {
+      const codigo = document.getElementById('codigo').value.trim().split('\n');
+      lineas = codigo.filter(l => l.trim());
+      let salida = '';
+      lineas.forEach((linea, i) => {
+        let l = linea.toUpperCase();
+        if (l.includes('G0') || l.includes('G00')) salida += `Línea ${i+1}: G00 - Movimiento rápido\n`;
+        else if (l.includes('G1') || l.includes('G01')) salida += `Línea ${i+1}: G01 - Movimiento lineal\n`;
+        else if (l.includes('M30')) salida += `Línea ${i+1}: M30 - Fin de programa\n`;
+        else salida += `Línea ${i+1}: ${l}\n`;
+      });
+      document.getElementById('analisis').innerText = salida;
+      reiniciar();
+    }
+
+    function simular() {
+      if (index >= lineas.length) return;
+      ejecutarLinea(lineas[index]);
+      index++;
+      setTimeout(simular, 600);
+    }
+
+    function paso() {
+      if (index >= lineas.length) return;
+      ejecutarLinea(lineas[index]);
+      index++;
+    }
+
+    function reiniciar() {
+      svg = document.getElementById("simulador");
+      svg.innerHTML = "";
+      x = 250; z = 150; index = 0;
+      let punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      punto.setAttribute("cx", x);
+      punto.setAttribute("cy", z);
+      punto.setAttribute("r", 4);
+      punto.setAttribute("fill", "#0f0");
+      svg.appendChild(punto);
+    }
+
+    function ejecutarLinea(l) {
+      l = l.toUpperCase();
+      let matchX = l.match(/X(-?\d+\.?\d*)/);
+      let matchZ = l.match(/Z(-?\d+\.?\d*)/);
+      let newX = matchX ? 250 + parseFloat(matchX[1]) : x;
+      let newZ = matchZ ? 150 - parseFloat(matchZ[1]) : z;
+      dibujarLinea(x, z, newX, newZ);
+      x = newX;
+      z = newZ;
+    }
+
+    function dibujarLinea(x1, y1, x2, y2) {
+      let linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      linea.setAttribute("x1", x1);
+      linea.setAttribute("y1", y1);
+      linea.setAttribute("x2", x2);
+      linea.setAttribute("y2", y2);
+      linea.setAttribute("stroke", "#bb86fc");
+      linea.setAttribute("stroke-width", "2");
+      svg.appendChild(linea);
+    }
+
+    function copiarAnalisis() {
+      const texto = document.getElementById("analisis").innerText;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Análisis copiado al portapapeles.");
+      });
+    }
+  </script>
+</body>
+</html>
