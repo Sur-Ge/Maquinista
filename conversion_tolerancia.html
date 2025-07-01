@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔁 Conversión y Tolerancias</title>
+  <style>
+    body {
+      background: #121212;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: #bb86fc;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      background: #1e1e1e;
+      color: #f0f0f0;
+      border: none;
+    }
+    .card {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <h1>🔁 Conversión y Tolerancias</h1>
+
+  <div class="card">
+    <h2>📏 Conversión mm ↔ pulgadas</h2>
+    <input type="number" id="inputValor" placeholder="Ingresa valor" />
+    <select id="tipoConversion">
+      <option value="mmToInch">Milímetros a Pulgadas</option>
+      <option value="inchToMm">Pulgadas a Milímetros</option>
+    </select>
+    <button onclick="convertir()">Convertir</button>
+    <p id="resultado"></p>
+  </div>
+
+  <div class="card">
+    <h2>📐 Tabla de ajustes comunes</h2>
+    <ul>
+      <li><strong>H7 / k6:</strong> Ajuste forzado. Rodamientos.</li>
+      <li><strong>H8 / h9:</strong> Deslizante sin lubricación.</li>
+      <li><strong>H7 / g6:</strong> Holgura mínima. Ejes guías.</li>
+      <li><strong>H7 / p6:</strong> Interferencia firme. Engranajes.</li>
+    </ul>
+    <p>Valores según tabla ISO. Para más detalle, consulta la norma ISO 286.</p>
+  </div>
+
+  <script>
+    function convertir() {
+      const valor = parseFloat(document.getElementById("inputValor").value);
+      const tipo = document.getElementById("tipoConversion").value;
+      let resultado = "";
+
+      if (isNaN(valor)) {
+        resultado = "❌ Ingresa un número válido.";
+      } else {
+        resultado = tipo === "mmToInch"
+          ? (valor / 25.4).toFixed(4) + " in"
+          : (valor * 25.4).toFixed(3) + " mm";
+      }
+
+      document.getElementById("resultado").innerText = resultado;
+    }
+  </script>
+</body>
+</html>
