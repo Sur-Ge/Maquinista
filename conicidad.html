@@ -99,17 +99,15 @@
     <input type="number" id="longitud" step="0.01">
 
     <button onclick="calcularConicidad()">Calcular Conicidad</button>
-
     <div class="result" id="resultado1" style="display:none;"></div>
   </div>
 
   <!-- Cálculo desde relación -->
   <div class="card">
-    <label for="relacion">🔸 Relación de conicidad (X):</label>
-    <input type="number" id="relacion" step="0.01" placeholder="Ej: 8.89">
+    <label for="relacion">🔸 Relación de conicidad:</label>
+    <input type="text" id="relacion" placeholder="Ej: 1:8.89 o solo 8.89">
 
     <button onclick="calcularDesdeRelacion()">Calcular Ángulo desde Relación</button>
-
     <div class="result" id="resultado2" style="display:none;"></div>
   </div>
 
@@ -144,21 +142,30 @@
     }
 
     function calcularDesdeRelacion() {
-      const valor = parseFloat(document.getElementById('relacion').value);
+      const texto = document.getElementById('relacion').value.trim();
       const resultado = document.getElementById('resultado2');
 
-      if (isNaN(valor) || valor <= 0) {
+      let valor = texto;
+      if (texto.includes(":")) {
+        const partes = texto.split(":");
+        valor = partes[1];
+      }
+
+      valor = valor.replace(/[^\d.,-]/g, "").replace(",", ".");
+      const numero = parseFloat(valor);
+
+      if (isNaN(numero) || numero <= 0) {
         resultado.style.display = "block";
-        resultado.innerHTML = "⚠️ Ingresa una relación válida (número mayor a 0).";
+        resultado.innerHTML = "⚠️ Ingresa una relación válida como '1:8.89' o solo '8.89'";
         return;
       }
 
-      const anguloRad = Math.atan(1 / (2 * valor));
+      const anguloRad = Math.atan(1 / (2 * numero));
       const anguloDeg = (anguloRad * 180 / Math.PI).toFixed(2);
 
       resultado.style.display = "block";
       resultado.innerHTML = `
-        📐 <strong>Relación ingresada:</strong> ${valor}<br>
+        📐 <strong>Relación ingresada:</strong> ${numero}<br>
         🎯 <strong>Ángulo aproximado:</strong> ${anguloDeg}°
       `;
     }
