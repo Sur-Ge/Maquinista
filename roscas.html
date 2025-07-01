@@ -124,6 +124,7 @@
     const D = parseFloat(document.getElementById('diametro').value);
     const P = parseFloat(document.getElementById('paso').value);
     const sentido = document.getElementById('sentido').value;
+    const tipo = document.getElementById('tipo').value;
 
     if (isNaN(D) || isNaN(P)) {
       alert("Por favor completa todos los campos numéricos.");
@@ -135,7 +136,11 @@
     const Dp = D - (0.6495 * P);
     const Di = D - (1.2268 * P);
     const Avance = sentido === "Izquierda" ? -P : P;
-    const h = 0.6134 * P;
+
+    let h = 0.6134 * P; // valor estándar
+    if (tipo === "Métrica") h = 0.65 * P;
+    if (tipo === "Whitworth") h = 0.6403 * P;
+
     const chaflan = 0.1 * D;
     const alturaTuerca = 0.8 * D;
 
