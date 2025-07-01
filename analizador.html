@@ -3,174 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📊 Analizador de Código G</title>
+  <title>📊 Analizador HCN (Códigos G/M)</title>
   <style>
-    body {
-      margin: 0;
-      background: #121212;
-      color: #f0f0f0;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-    }
-    h1 {
-      text-align: center;
-      color: #bb86fc;
-      margin: 20px;
-    }
-    .container {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 20px;
-      padding: 20px;
-    }
-    .panel {
-      flex: 1;
-      min-width: 300px;
-      background: #1e1e1e;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-    textarea {
-      width: 100%;
-      height: 150px;
-      background: #292929;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-      resize: vertical;
-      font-family: monospace;
-    }
-    button {
-      background: #bb86fc;
-      color: #000;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      margin: 5px 0;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #d1afff;
-    }
-    #analisis {
-      font-family: monospace;
-      font-size: 0.95em;
-    }
-    svg {
-      width: 100%;
-      height: 300px;
-      background: #000;
-      border: 1px solid #444;
-    }
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
+    body { background: #121212; color: #f0f0f0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+    h1 { color: #bb86fc; text-align: center; }
+    textarea, pre, svg, button { width: 100%; box-sizing: border-box; }
+    textarea { height: 150px; background: #1e1e1e; color: #f0f0f0; border: none; border-radius: 10px; padding: 10px; font-family: monospace; }
+    pre { background: #1e1e1e; padding: 10px; border-radius: 10px; margin-top: 10px; white-space: pre-wrap; word-wrap: break-word; }
+    svg { height: 300px; background: #000; margin-top: 10px; border: 1px solid #444; }
+    .ok { color: #a0f8a0; } .error { color: #ff5252; }
+    .controls { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
+    button { background: #bb86fc; color: #000; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #d1afff; }
+    .table-container { margin-top: 40px; background: #1e1e1e; padding: 20px; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid #444; }
+    th { color: #bb86fc; text-align: left; }
   </style>
 </head>
 <body>
-  <h1>📊 Analizador de Código G</h1>
+<h1>📊 Analizador de Código G/M para HCN</h1>
 
-  <div class="container">
-    <!-- Análisis -->
-    <div class="panel">
-      <h3>🧾 Pega tu programa CNC</h3>
-      <textarea id="codigo" placeholder="Ej:&#10;G90 G21&#10;G0 X0 Z0&#10;G1 X20 Z-10 F150&#10;M30"></textarea>
-      <button onclick="analizar()">🔍 Analizar</button>
-      <button onclick="copiarAnalisis()">📋 Copiar análisis</button>
-      <pre id="analisis"></pre>
-    </div>
+<textarea id="codigo" placeholder="Pega aquí tu programa CNC..."></textarea>
+<div class="controls">
+  <button onclick="analizar()">🔍 Analizar</button>
+  <button onclick="copiar()">📋 Copiar</button>
+  <button onclick="simular()">▶️ Simular</button>
+  <button onclick="paso()">⏭️ Paso</button>
+  <button onclick="reiniciar()">🔁 Reiniciar</button>
+</div>
+<pre id="resultado"></pre>
+<svg id="simulador" viewBox="0 0 500 300"></svg>
 
-    <!-- Simulación -->
-    <div class="panel">
-      <h3>🎥 Simulación visual (Plano X-Z)</h3>
-      <svg id="simulador" viewBox="0 0 500 300"></svg>
-      <div class="controls">
-        <button onclick="simular()">▶️ Reproducir</button>
-        <button onclick="paso()">⏭️ Paso</button>
-        <button onclick="reiniciar()">🔁 Reiniciar</button>
-      </div>
-    </div>
-  </div>
+<div class="table-container">
+  <h2>📘 Tabla de Códigos G y M en HCN</h2>
+  <table>
+    <tr><th>Código</th><th>Descripción</th></tr>
+    <tr><td>G00</td><td>Movimiento rápido</td></tr>
+    <tr><td>G01</td><td>Interpolación lineal</td></tr>
+    <tr><td>G02</td><td>Interpolación circular CW</td></tr>
+    <tr><td>G03</td><td>Interpolación circular CCW</td></tr>
+    <tr><td>G20</td><td>Unidades en pulgadas</td></tr>
+    <tr><td>G21</td><td>Unidades en milímetros</td></tr>
+    <tr><td>G28</td><td>Retorno a posición de referencia</td></tr>
+    <tr><td>G70</td><td>Acabado (repetición del perfil)</td></tr>
+    <tr><td>G71</td><td>Desbaste longitudinal</td></tr>
+    <tr><td>G72</td><td>Desbaste transversal</td></tr>
+    <tr><td>G73</td><td>Desbaste de alta eficiencia</td></tr>
+    <tr><td>G74</td><td>Ranurado frontal</td></tr>
+    <tr><td>G75</td><td>Ranurado radial</td></tr>
+    <tr><td>G76</td><td>Ciclo de roscado multipasada</td></tr>
+    <tr><td>G80–G89</td><td>Ciclos de taladrado, mandrinado, roscado rígido</td></tr>
+    <tr><td>M00</td><td>Pausa programada</td></tr>
+    <tr><td>M03</td><td>Husillo sentido horario (CW)</td></tr>
+    <tr><td>M04</td><td>Husillo antihorario (CCW)</td></tr>
+    <tr><td>M05</td><td>Parar husillo</td></tr>
+    <tr><td>M08</td><td>Activar refrigerante</td></tr>
+    <tr><td>M09</td><td>Desactivar refrigerante</td></tr>
+    <tr><td>M30</td><td>Fin de programa y reinicio</td></tr>
+  </table>
+</div>
 
-  <script>
-    let lineas = [], index = 0, x = 250, z = 150, svg;
+<script>
+let lineas = [], index = 0, x = 250, z = 150, svg;
 
-    function analizar() {
-      const codigo = document.getElementById('codigo').value.trim().split('\n');
-      lineas = codigo.filter(l => l.trim());
-      let salida = '';
-      lineas.forEach((linea, i) => {
-        let l = linea.toUpperCase();
-        if (l.includes('G0') || l.includes('G00')) salida += `Línea ${i+1}: G00 - Movimiento rápido\n`;
-        else if (l.includes('G1') || l.includes('G01')) salida += `Línea ${i+1}: G01 - Movimiento lineal\n`;
-        else if (l.includes('M30')) salida += `Línea ${i+1}: M30 - Fin de programa\n`;
-        else salida += `Línea ${i+1}: ${l}\n`;
-      });
-      document.getElementById('analisis').innerText = salida;
-      reiniciar();
-    }
+function analizar() {
+  let input = document.getElementById("codigo").value.trim().split("\\n");
+  lineas = input.filter(l => l.trim()); index = 0; x = 250; z = 150;
+  let salida = '', ok = 0, err = 0;
+  for (let i = 0; i < lineas.length; i++) {
+    let l = lineas[i].toUpperCase().trim();
+    let exp = '';
+    if (!l) { exp = '❌ Línea vacía'; err++; }
+    else if (l.includes("G70")) exp = "Acabado con perfil";
+    else if (l.includes("G71")) exp = "Desbaste longitudinal";
+    else if (l.includes("G72")) exp = "Desbaste transversal";
+    else if (l.includes("G73")) exp = "Desbaste alta eficiencia";
+    else if (l.includes("G74")) exp = "Ranurado frontal";
+    else if (l.includes("G75")) exp = "Ranurado radial";
+    else if (l.includes("G76")) exp = "Roscar multipasadas";
+    else if (l.match(/G8[0-9]/)) exp = "Ciclo de taladrado o roscado";
+    else if (l.includes("G00")) exp = "Movimiento rápido";
+    else if (l.includes("G01")) exp = "Movimiento lineal";
+    else if (l.includes("M03")) exp = "Husillo CW";
+    else if (l.includes("M05")) exp = "Parar husillo";
+    else if (l.includes("M08")) exp = "Refrigerante ON";
+    else if (l.includes("M09")) exp = "Refrigerante OFF";
+    else if (l.includes("M30")) exp = "Fin de programa";
+    else if (l.match(/X|Z/)) exp = "Movimiento en eje";
+    else exp = '❌ Código no reconocido', err++;
+    if (!exp.startsWith('❌')) ok++;
+    salida += `<span class="${exp.startsWith('❌') ? 'error':'ok'}">Línea ${i+1}: ${l} → ${exp}</span>\\n`;
+  }
+  document.getElementById("resultado").innerHTML = salida + "\\n📄 Total: " + lineas.length + " | ✅ Válidas: " + ok + " | ❌ Errores: " + err;
+  reiniciar();
+}
 
-    function simular() {
-      if (index >= lineas.length) return;
-      ejecutarLinea(lineas[index]);
-      index++;
-      setTimeout(simular, 600);
-    }
+function copiar() {
+  navigator.clipboard.writeText(document.getElementById("resultado").innerText).then(() => alert("Copiado al portapapeles"));
+}
 
-    function paso() {
-      if (index >= lineas.length) return;
-      ejecutarLinea(lineas[index]);
-      index++;
-    }
+function simular() {
+  if (index >= lineas.length) return;
+  ejecutar(lineas[index]); index++; setTimeout(simular, 500);
+}
 
-    function reiniciar() {
-      svg = document.getElementById("simulador");
-      svg.innerHTML = "";
-      x = 250; z = 150; index = 0;
-      let punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      punto.setAttribute("cx", x);
-      punto.setAttribute("cy", z);
-      punto.setAttribute("r", 4);
-      punto.setAttribute("fill", "#0f0");
-      svg.appendChild(punto);
-    }
+function paso() {
+  if (index < lineas.length) ejecutar(lineas[index++]);
+}
 
-    function ejecutarLinea(l) {
-      l = l.toUpperCase();
-      let matchX = l.match(/X(-?\d+\.?\d*)/);
-      let matchZ = l.match(/Z(-?\d+\.?\d*)/);
-      let newX = matchX ? 250 + parseFloat(matchX[1]) : x;
-      let newZ = matchZ ? 150 - parseFloat(matchZ[1]) : z;
-      dibujarLinea(x, z, newX, newZ);
-      x = newX;
-      z = newZ;
-    }
+function reiniciar() {
+  svg = document.getElementById("simulador"); svg.innerHTML = ""; x = 250; z = 150; index = 0;
+  let punto = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  punto.setAttribute("cx", x); punto.setAttribute("cy", z); punto.setAttribute("r", 4); punto.setAttribute("fill", "#0f0");
+  svg.appendChild(punto);
+}
 
-    function dibujarLinea(x1, y1, x2, y2) {
-      let linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      linea.setAttribute("x1", x1);
-      linea.setAttribute("y1", y1);
-      linea.setAttribute("x2", x2);
-      linea.setAttribute("y2", y2);
-      linea.setAttribute("stroke", "#bb86fc");
-      linea.setAttribute("stroke-width", "2");
-      svg.appendChild(linea);
-    }
-
-    function copiarAnalisis() {
-      const texto = document.getElementById("analisis").innerText;
-      navigator.clipboard.writeText(texto).then(() => {
-        alert("Análisis copiado al portapapeles.");
-      });
-    }
-  </script>
+function ejecutar(l) {
+  l = l.toUpperCase();
+  if (!(l.includes("G00") || l.includes("G01"))) return;
+  let X = l.match(/X(-?\\d+\\.?\\d*)/); let Z = l.match(/Z(-?\\d+\\.?\\d*)/);
+  let newX = X ? 250 + parseFloat(X[1]) : x;
+  let newZ = Z ? 150 - parseFloat(Z[1]) : z;
+  let linea = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  linea.setAttribute("x1", x); linea.setAttribute("y1", z);
+  linea.setAttribute("x2", newX); linea.setAttribute("y2", newZ);
+  linea.setAttribute("stroke", "#bb86fc"); linea.setAttribute("stroke-width", "2");
+  svg.appendChild(linea); x = newX; z = newZ;
+}
+</script>
 </body>
 </html>
